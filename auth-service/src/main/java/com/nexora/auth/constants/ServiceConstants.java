@@ -33,6 +33,9 @@ public final class ServiceConstants {
     public static final String ADMIN_USERS_PATH = "/users";
     public static final String JWKS_PATH = "/.well-known/jwks.json";
     public static final String ACTUATOR_HEALTH_PATH = "/actuator/health";
+    public static final String AUTH_MAGIC_LINK_BASE_PATH = "/magic-link";
+    public static final String AUTH_MAGIC_LINK_REQUEST_PATH = "/request";
+    public static final String AUTH_MAGIC_LINK_VERIFY_PATH = "/verify";
 
     // Response keys and values
     public static final String RESPONSE_MESSAGE_KEY = "message";
@@ -53,6 +56,9 @@ public final class ServiceConstants {
     public static final long OTP_RESEND_WINDOW_MINUTES = 60L;
     public static final String OTP_TYPE_REGISTER = "register";
     public static final String OTP_TYPE_LOGIN = "login";
+    public static final String MAGIC_LINK_REDIS_PREFIX = "magic:";
+    public static final String MAGIC_LINK_RATE_REDIS_PREFIX = "magic:rate:";
+    public static final String MAGIC_LINK_SENT_MESSAGE = "Magic link sent to your email";
 
     // JWKS metadata
     public static final String JWKS_KEYS_KEY = "keys";
@@ -83,6 +89,7 @@ public final class ServiceConstants {
     public static final String REGISTER_OTP_SENT_MESSAGE = "Verification OTP sent to email";
     public static final String EMAIL_VERIFIED_MESSAGE = "Email verified successfully";
     public static final String LOGIN_OTP_SENT_MESSAGE = "Login OTP sent to email";
+    public static final String MAGIC_LINK_EMAIL_SUBJECT = "Your Nexora magic sign-in link";
 
     // Hashing
     public static final String SHA_256_ALGORITHM = "SHA-256";

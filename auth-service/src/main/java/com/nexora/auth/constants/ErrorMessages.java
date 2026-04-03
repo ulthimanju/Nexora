@@ -32,6 +32,11 @@ public final class ErrorMessages {
     public static final String OTP_ATTEMPTS_EXCEEDED = "Too many attempts, request a new OTP";
     public static final String OTP_RESEND_LIMIT_REACHED = "OTP resend limit reached. Try again later";
     public static final String OTP_TYPE_NOT_SUPPORTED = "Unsupported OTP type";
+    public static final String MAGIC_LINK_EXPIRED = "Magic link expired or already used";
+    public static final String MAGIC_LINK_ALREADY_USED = "Magic link already used";
+    public static final String MAGIC_LINK_RATE_LIMIT_EXCEEDED = "Magic link request limit exceeded. Try again later";
+    public static final String MAGIC_LINK_ACCOUNT_SUSPENDED = "Account suspended. Magic link login not allowed";
+    public static final String MAGIC_LINK_EMAIL_NOT_FOUND = "Magic link not available for this email";
 
     // System errors
     public static final String UNEXPECTED_ERROR = "An unexpected error occurred";

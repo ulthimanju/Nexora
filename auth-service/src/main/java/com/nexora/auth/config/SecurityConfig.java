@@ -38,6 +38,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                AUTH_BASE_PATH + AUTH_MAGIC_LINK_BASE_PATH + AUTH_MAGIC_LINK_REQUEST_PATH,
+                                AUTH_BASE_PATH + AUTH_MAGIC_LINK_BASE_PATH + AUTH_MAGIC_LINK_VERIFY_PATH,
                                 AUTH_BASE_PATH + "/**",
                                 ACTUATOR_HEALTH_PATH,
                                 JWKS_PATH

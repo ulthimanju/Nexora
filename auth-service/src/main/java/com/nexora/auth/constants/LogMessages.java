@@ -30,6 +30,12 @@ public final class LogMessages {
     public static final String SET_AUTHENTICATION = "Set authentication for user: {}";
     public static final String CANNOT_SET_AUTHENTICATION = "Cannot set user authentication: {}";
     public static final String CREATED_ROLE = "Created role: {}";
+    public static final String MAGIC_LINK_REQUESTED = "Magic link requested for: {}";
+    public static final String MAGIC_LINK_SENT = "Magic link sent to: {}";
+    public static final String MAGIC_LINK_VERIFIED = "Magic link verified for: {}";
+    public static final String MAGIC_LINK_EXPIRED_ATTEMPT = "Expired or used magic link attempt for token: {}";
+    public static final String MAGIC_LINK_RATE_LIMITED = "Magic link rate limited for: {}";
+    public static final String MAGIC_LINK_ACCOUNT_SUSPENDED = "Magic link blocked for suspended account: {}";
 
     // JWT configuration logs
     public static final String GENERATED_KEYPAIR = "Generated RSA keypair for JWT signing";
