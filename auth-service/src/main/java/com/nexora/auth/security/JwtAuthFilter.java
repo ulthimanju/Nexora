@@ -1,5 +1,7 @@
+// Refactored: extracted 5 constants
 package com.nexora.auth.security;
 
+import com.nexora.auth.constants.LogMessages;
 import com.nexora.auth.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import static com.nexora.auth.constants.ServiceConstants.*;
 
 @Component
 @RequiredArgsConstructor
@@ -32,15 +35,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            final String jwt = authHeader.substring(7);
+            final String jwt = authHeader.substring(BEARER_PREFIX.length());
             final String username = tokenService.extractUsername(jwt);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -55,11 +58,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    log.debug("Set authentication for user: {}", username);
+                    log.debug(LogMessages.SET_AUTHENTICATION, username);
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
+            log.error(LogMessages.CANNOT_SET_AUTHENTICATION, e.getMessage());
         }
 
         filterChain.doFilter(request, response);

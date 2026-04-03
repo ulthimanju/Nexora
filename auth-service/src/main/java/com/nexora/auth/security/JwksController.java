@@ -1,3 +1,4 @@
+// Refactored: extracted 10 constants
 package com.nexora.auth.security;
 
 import com.nexora.auth.config.JwtConfig;
@@ -9,6 +10,7 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.Map;
+import static com.nexora.auth.constants.ServiceConstants.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class JwksController {
 
     private final JwtConfig jwtConfig;
 
-    @GetMapping("/.well-known/jwks.json")
+    @GetMapping(JWKS_PATH)
     public Map<String, Object> getJwks() {
         PublicKey publicKey = jwtConfig.getPublicKey();
         RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
@@ -27,13 +29,13 @@ public class JwksController {
                 .encodeToString(rsaPublicKey.getPublicExponent().toByteArray());
 
         return Map.of(
-                "keys", new Object[]{
+                JWKS_KEYS_KEY, new Object[]{
                         Map.of(
-                                "kty", "RSA",
-                                "use", "sig",
-                                "alg", "RS256",
-                                "n", n,
-                                "e", e
+                                JWKS_KEY_TYPE, RSA_ALGORITHM,
+                                JWKS_USE, JWKS_USE_SIGNATURE,
+                                JWKS_ALGORITHM, JWKS_ALGORITHM_RS256,
+                                JWKS_MODULUS, n,
+                                JWKS_EXPONENT, e
                         )
                 }
         );
