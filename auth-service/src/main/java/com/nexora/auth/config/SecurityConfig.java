@@ -1,3 +1,4 @@
+// Refactored: extracted 5 constants
 package com.nexora.auth.config;
 
 import com.nexora.auth.security.JwtAuthFilter;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static com.nexora.auth.constants.ServiceConstants.*;
 
 @Configuration
 @EnableWebSecurity
@@ -36,11 +38,11 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/actuator/health",
-                                "/.well-known/jwks.json"
+                                AUTH_BASE_PATH + "/**",
+                                ACTUATOR_HEALTH_PATH,
+                                JWKS_PATH
                         ).permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers(ADMIN_BASE_PATH + "/**").hasRole(ROLE_ADMIN_NAME)
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

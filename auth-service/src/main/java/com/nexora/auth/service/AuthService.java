@@ -1,8 +1,10 @@
+// Refactored: extracted 22 constants
 package com.nexora.auth.service;
 
 import com.nexora.auth.dto.request.LoginRequest;
 import com.nexora.auth.dto.request.RegisterRequest;
 import com.nexora.auth.dto.response.AuthResponse;
+import com.nexora.auth.constants.LogMessages;
 import com.nexora.auth.exception.AuthException;
 import com.nexora.auth.model.RefreshToken;
 import com.nexora.auth.model.Role;
@@ -29,6 +31,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import static com.nexora.auth.constants.ErrorMessages.*;
+import static com.nexora.auth.constants.ServiceConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,11 +50,11 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new AuthException("Username already exists");
+            throw new AuthException(USERNAME_EXISTS);
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new AuthException("Email already exists");
+            throw new AuthException(EMAIL_EXISTS);
         }
 
         User user = new User();
@@ -58,12 +62,12 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Role studentRole = roleRepository.findByName("ROLE_STUDENT")
-                .orElseThrow(() -> new AuthException("Default role not found"));
+        Role studentRole = roleRepository.findByName(ROLE_STUDENT)
+                .orElseThrow(() -> new AuthException(DEFAULT_ROLE_NOT_FOUND));
         user.getRoles().add(studentRole);
 
         user = userRepository.save(user);
-        log.info("User registered: {}", user.getUsername());
+        log.info(LogMessages.USER_REGISTERED, user.getUsername());
 
         return generateAuthResponse(user);
     }
@@ -79,12 +83,12 @@ public class AuthService {
             );
 
             User user = (User) authentication.getPrincipal();
-            log.info("User logged in: {}", user.getUsername());
+            log.info(LogMessages.USER_LOGGED_IN, user.getUsername());
 
             return generateAuthResponse(user);
         } catch (BadCredentialsException e) {
-            log.error("Failed login attempt for: {}", request.getUsernameOrEmail());
-            throw new AuthException("Invalid username or password");
+            log.error(LogMessages.FAILED_LOGIN_ATTEMPT, request.getUsernameOrEmail());
+            throw new AuthException(INVALID_CREDENTIALS);
         }
     }
 
@@ -93,29 +97,29 @@ public class AuthService {
         try {
             String username = tokenService.extractUsername(refreshTokenStr);
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                    .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
 
             String tokenHash = hashToken(refreshTokenStr);
             RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
-                    .orElseThrow(() -> new AuthException("Refresh token not found"));
+                    .orElseThrow(() -> new AuthException(REFRESH_TOKEN_NOT_FOUND));
 
             if (refreshToken.isRevoked()) {
-                throw new AuthException("Refresh token has been revoked");
+                throw new AuthException(REFRESH_TOKEN_REVOKED);
             }
 
             if (refreshToken.isExpired()) {
-                throw new AuthException("Refresh token has expired");
+                throw new AuthException(REFRESH_TOKEN_EXPIRED);
             }
 
-            String redisKey = "refresh_token:" + tokenHash;
+            String redisKey = REFRESH_TOKEN_REDIS_PREFIX + tokenHash;
             if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
-                throw new AuthException("Refresh token not found in cache");
+                throw new AuthException(REFRESH_TOKEN_CACHE_MISS);
             }
 
             return generateAuthResponse(user);
         } catch (Exception e) {
-            log.error("Token refresh failed", e);
-            throw new AuthException("Invalid refresh token");
+            log.error(LogMessages.TOKEN_REFRESH_FAILED, e);
+            throw new AuthException(INVALID_REFRESH_TOKEN);
         }
     }
 
@@ -124,18 +128,18 @@ public class AuthService {
         try {
             String tokenHash = hashToken(refreshTokenStr);
             RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
-                    .orElseThrow(() -> new AuthException("Refresh token not found"));
+                    .orElseThrow(() -> new AuthException(REFRESH_TOKEN_NOT_FOUND));
 
             refreshToken.setRevoked(true);
             refreshTokenRepository.save(refreshToken);
 
-            String redisKey = "refresh_token:" + tokenHash;
+            String redisKey = REFRESH_TOKEN_REDIS_PREFIX + tokenHash;
             redisTemplate.delete(redisKey);
 
-            log.info("User logged out");
+            log.info(LogMessages.USER_LOGGED_OUT);
         } catch (Exception e) {
-            log.error("Logout failed", e);
-            throw new AuthException("Logout failed");
+            log.error(LogMessages.LOGOUT_FAILED, e);
+            throw new AuthException(LOGOUT_FAILED);
         }
     }
 
@@ -150,7 +154,7 @@ public class AuthService {
         refreshToken.setExpiresAt(LocalDateTime.now().plusDays(7));
         refreshTokenRepository.save(refreshToken);
 
-        String redisKey = "refresh_token:" + tokenHash;
+        String redisKey = REFRESH_TOKEN_REDIS_PREFIX + tokenHash;
         redisTemplate.opsForValue().set(redisKey, user.getUsername(), 7, TimeUnit.DAYS);
 
         Set<String> roles = user.getAuthorities().stream()
@@ -160,7 +164,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshTokenStr)
-                .tokenType("Bearer")
+                .tokenType(BEARER_TOKEN_TYPE)
                 .expiresIn(900L)
                 .username(user.getUsername())
                 .email(user.getEmail())
@@ -170,7 +174,7 @@ public class AuthService {
 
     private String hashToken(String token) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
             byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
@@ -180,7 +184,7 @@ public class AuthService {
             }
             return hexString.toString();
         } catch (Exception e) {
-            throw new AuthException("Failed to hash token", e);
+            throw new AuthException(HASH_TOKEN_FAILED, e);
         }
     }
 }

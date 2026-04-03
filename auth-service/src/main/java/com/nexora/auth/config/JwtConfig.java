@@ -1,5 +1,7 @@
+// Refactored: extracted 5 constants
 package com.nexora.auth.config;
 
+import com.nexora.auth.constants.LogMessages;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
@@ -12,6 +14,8 @@ import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import static com.nexora.auth.constants.ErrorMessages.FAILED_INIT_JWT_CONFIG;
+import static com.nexora.auth.constants.ServiceConstants.RSA_ALGORITHM;
 
 @Configuration
 @Slf4j
@@ -36,13 +40,13 @@ public class JwtConfig {
     public JwtConfig() {
         try {
             // Generate RSA keypair for RS256
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance(RSA_ALGORITHM);
             keyGen.initialize(2048);
             this.keyPair = keyGen.generateKeyPair();
-            log.info("Generated RSA keypair for JWT signing");
+            log.info(LogMessages.GENERATED_KEYPAIR);
         } catch (Exception e) {
-            log.error("Failed to generate RSA keypair", e);
-            throw new RuntimeException("Failed to initialize JWT configuration", e);
+            log.error(LogMessages.FAILED_GENERATE_KEYPAIR, e);
+            throw new RuntimeException(FAILED_INIT_JWT_CONFIG, e);
         }
     }
 
@@ -51,10 +55,10 @@ public class JwtConfig {
             try {
                 byte[] keyBytes = Base64.getDecoder().decode(privateKeyStr);
                 PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-                KeyFactory kf = KeyFactory.getInstance("RSA");
+                KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM);
                 return kf.generatePrivate(spec);
             } catch (Exception e) {
-                log.warn("Failed to load private key from config, using generated key", e);
+                log.warn(LogMessages.LOAD_PRIVATE_KEY_FALLBACK, e);
             }
         }
         return keyPair.getPrivate();

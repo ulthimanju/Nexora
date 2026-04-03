@@ -1,3 +1,4 @@
+// Refactored: extracted 1 constant
 package com.nexora.auth.service;
 
 import com.nexora.auth.config.JwtConfig;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import static com.nexora.auth.constants.ServiceConstants.ROLES_CLAIM_KEY;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class TokenService {
 
     public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream()
+        claims.put(ROLES_CLAIM_KEY, userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
         return createToken(claims, userDetails.getUsername(), jwtConfig.getExpiration());
