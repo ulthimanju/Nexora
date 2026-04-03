@@ -4,7 +4,7 @@ import { API_ENDPOINTS, AUTH_ERRORS, ROUTES } from '../constants/authConstants'
 
 // Create axios instance
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -85,7 +85,7 @@ apiClient.interceptors.response.use(
       try {
         // Attempt to refresh token
         const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}${API_ENDPOINTS.REFRESH_TOKEN}`,
+          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'}${API_ENDPOINTS.REFRESH_TOKEN}`,
           { refreshToken }
         )
 

@@ -20,7 +20,7 @@ Production-grade React authentication UI for the Nexora platform.
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Nexora auth-service backend running on port 8080
+- Nexora auth-service backend running on port 8081 (see `../auth-service`)
 
 ### Installation
 
@@ -32,7 +32,7 @@ npm install
 cp .env.example .env
 
 # Update .env with your backend URL if different
-# VITE_API_BASE_URL=http://localhost:8080
+# VITE_API_BASE_URL=http://localhost:8081
 ```
 
 ### Development
