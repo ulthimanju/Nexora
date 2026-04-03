@@ -21,4 +21,7 @@ public class RegisterRequest {
     @NotBlank(message = PASSWORD_REQUIRED)
     @Size(min = 8, message = PASSWORD_LENGTH)
     private String password;
+
+    @NotBlank(message = ROLE_REQUIRED)
+    private String role;
 }

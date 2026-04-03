@@ -3,6 +3,7 @@ package com.nexora.auth.exception;
 
 import com.nexora.auth.constants.LogMessages;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,12 +25,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex) {
         log.error(LogMessages.AUTH_EXCEPTION, ex.getMessage());
+        HttpStatus status = ex.getStatus();
         ErrorResponse error = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
+                status.value(),
                 ex.getMessage(),
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(OtpException.class)
+    public ResponseEntity<ErrorResponse> handleOtpException(OtpException ex) {
+        log.error(LogMessages.AUTH_EXCEPTION, ex.getMessage());
+        HttpStatus status = ex.getStatus();
+        ErrorResponse error = new ErrorResponse(
+                status.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(status).body(error);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -62,6 +76,15 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation ->
+                errors.put(violation.getPropertyPath().toString(), violation.getMessage())
+        );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 

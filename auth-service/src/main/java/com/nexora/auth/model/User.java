@@ -15,6 +15,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.nexora.auth.model.AccountStatus.ACTIVE;
+import static com.nexora.auth.model.AccountStatus.SUSPENDED;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -39,6 +42,10 @@ public class User implements UserDetails {
     private int tokenVersion = 0;
 
     private boolean enabled = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private AccountStatus status = AccountStatus.PENDING;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -70,7 +77,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return status != SUSPENDED;
     }
 
     @Override
@@ -80,6 +87,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return enabled && status == ACTIVE;
     }
 }
