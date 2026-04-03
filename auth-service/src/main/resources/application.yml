@@ -3,6 +3,21 @@ spring:
     name: auth-service
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
 
 server:
   port: 8081
@@ -15,3 +30,9 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+
+nexora:
+  otp:
+    ttl-register: 10m
+    ttl-login: 5m
+    max-attempts: 3

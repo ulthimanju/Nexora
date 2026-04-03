@@ -12,6 +12,13 @@ public final class LogMessages {
     public static final String TOKEN_REFRESH_FAILED = "Token refresh failed";
     public static final String USER_LOGGED_OUT = "User logged out";
     public static final String LOGOUT_FAILED = "Logout failed";
+    public static final String OTP_EMAIL_SENT = "OTP email sent to: {}";
+    public static final String OTP_GENERATED = "Generated OTP for: {}";
+    public static final String OTP_VERIFIED = "OTP verified for: {}";
+    public static final String OTP_RESEND_REQUEST = "OTP resend requested for: {}";
+    public static final String OTP_ATTEMPTS_EXCEEDED = "OTP attempts exceeded for: {}";
+    public static final String LOGIN_OTP_REQUEST = "Login OTP requested for: {}";
+    public static final String ACCOUNT_ACTIVATED = "Account activated for: {}";
 
     // Exception logs
     public static final String AUTH_EXCEPTION = "Auth exception: {}";

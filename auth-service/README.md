@@ -13,6 +13,7 @@ A production-ready authentication and authorization microservice built with Spri
 - **Redis Caching**: Fast token validation and rate limiting support
 - **Docker Support**: Multi-stage builds for lean production images
 - **Health Checks**: Spring Actuator for monitoring and observability
+- **Email OTP Verification**: Gmail SMTP delivery for registration activation and passwordless login
 
 ## Tech Stack
 
@@ -80,8 +81,25 @@ Content-Type: application/json
 {
   "username": "johndoe",
   "email": "john@example.com",
-  "password": "SecurePass123"
+  "password": "SecurePass123",
+  "role": "STUDENT"
 }
+```
+
+#### Verify Email OTP
+```bash
+POST /api/v1/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "otp": "123456"
+}
+```
+
+#### Resend Registration OTP
+```bash
+POST /api/v1/auth/resend-otp?type=register&email=john@example.com
 ```
 
 #### Login
@@ -92,6 +110,27 @@ Content-Type: application/json
 {
   "usernameOrEmail": "johndoe",
   "password": "SecurePass123"
+}
+```
+
+#### Request Login OTP (Passwordless)
+```bash
+POST /api/v1/auth/login-otp/request
+Content-Type: application/json
+
+{
+  "email": "john@example.com"
+}
+```
+
+#### Verify Login OTP
+```bash
+POST /api/v1/auth/login-otp/verify
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "otp": "654321"
 }
 ```
 
@@ -151,6 +190,13 @@ See `init-db.sql` for the complete schema.
 | `REDIS_PASS` | Redis password | (empty) |
 | `JWT_SECRET` | JWT secret for development | (generated) |
 | `JWT_PRIVATE_KEY` | RSA private key for production | (generated) |
+| `MAIL_HOST` | SMTP host (Gmail) | smtp.gmail.com |
+| `MAIL_PORT` | SMTP port | 587 |
+| `MAIL_USERNAME` | SMTP username (sender email) | (empty) |
+| `MAIL_PASSWORD` | SMTP password/app password | (empty) |
+| `NEXORA_OTP_TTL_REGISTER` | Registration OTP TTL (Duration) | 10m |
+| `NEXORA_OTP_TTL_LOGIN` | Login OTP TTL (Duration) | 5m |
+| `NEXORA_OTP_MAX_ATTEMPTS` | Max login OTP attempts | 3 |
 
 ### Profiles
 
