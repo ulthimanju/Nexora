@@ -24,6 +24,10 @@ A production-ready authentication and authorization microservice built with Spri
 - **Build Tool**: Maven
 - **Container**: Docker with Alpine Linux
 
+## Frontend Location
+
+The React frontend is now a standalone microservice located at `../frontend`. It is no longer bundled inside the auth-service directory—see that folder's README for setup and run instructions.
+
 ## Getting Started
 
 ### Prerequisites
