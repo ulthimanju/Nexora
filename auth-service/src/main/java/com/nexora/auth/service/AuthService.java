@@ -190,7 +190,8 @@ public class AuthService {
         return generateAuthResponse(user);
     }
 
-    private AuthResponse generateAuthResponse(User user) {
+    @Transactional
+    public AuthResponse generateAuthResponse(User user) {
         String accessToken = tokenService.generateAccessToken(user);
         String refreshTokenStr = tokenService.generateRefreshToken(user);
         String tokenHash = hashToken(refreshTokenStr);

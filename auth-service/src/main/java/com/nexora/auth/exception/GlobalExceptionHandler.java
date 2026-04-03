@@ -2,6 +2,8 @@
 package com.nexora.auth.exception;
 
 import com.nexora.auth.constants.LogMessages;
+import com.nexora.auth.exception.MagicLinkExpiredException;
+import com.nexora.auth.exception.MagicLinkRateLimitException;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import static com.nexora.auth.constants.ErrorMessages.MAGIC_LINK_EXPIRED;
+import static com.nexora.auth.constants.ErrorMessages.MAGIC_LINK_RATE_LIMIT_EXCEEDED;
 import static com.nexora.auth.constants.ErrorMessages.*;
 
 @RestControllerAdvice
@@ -44,6 +48,28 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(MagicLinkExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleMagicLinkExpired(MagicLinkExpiredException ex) {
+        log.error(LogMessages.AUTH_EXCEPTION, ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.GONE.value(),
+                MAGIC_LINK_EXPIRED,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.GONE).body(error);
+    }
+
+    @ExceptionHandler(MagicLinkRateLimitException.class)
+    public ResponseEntity<ErrorResponse> handleMagicLinkRateLimit(MagicLinkRateLimitException ex) {
+        log.error(LogMessages.AUTH_EXCEPTION, ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                MAGIC_LINK_RATE_LIMIT_EXCEEDED,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
