@@ -1,7 +1,11 @@
 .agents
-
 artifacts
-
 build
-
 node_modules
+handiwork
+
+# Auth Service
+auth-service/target/
+auth-service/.idea/
+auth-service/*.iml
+auth-service/*.log
