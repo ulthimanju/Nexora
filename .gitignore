@@ -9,3 +9,15 @@ auth-service/target/
 auth-service/.idea/
 auth-service/*.iml
 auth-service/*.log
+
+# AI Service
+ai-service/target/
+ai-service/.idea/
+ai-service/*.iml
+ai-service/*.log
+
+# Assessment Service
+assessment-service/target/
+assessment-service/.idea/
+assessment-service/*.iml
+assessment-service/*.log
