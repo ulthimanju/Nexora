@@ -1,6 +1,8 @@
 services:
   auth-service:
-    build: .
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
     container_name: nexora-auth
     ports:
       - "8081:8081"
@@ -20,6 +22,19 @@ services:
       - nexora-net
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nexora-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - auth-service
+    networks:
+      - nexora-net
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     container_name: nexora-auth-db
@@ -29,7 +44,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS:-nexora_pass}
     volumes:
       - auth_pg_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./auth-service/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "5432:5432"
     healthcheck:
