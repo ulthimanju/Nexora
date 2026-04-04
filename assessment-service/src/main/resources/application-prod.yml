@@ -22,9 +22,6 @@ spring:
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASS}
 
-jwt:
-  public-key: ${JWT_PUBLIC_KEY}
-
 logging:
   level:
     com.nexora.assessment: INFO
