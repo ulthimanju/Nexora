@@ -31,6 +31,7 @@ public class AttemptServiceImpl implements AttemptService {
     private final AttemptRepository attemptRepository;
     private final AssessmentService assessmentService;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final EnrollmentService enrollmentService;
 
     @Override
     @Transactional
@@ -45,6 +46,16 @@ public class AttemptServiceImpl implements AttemptService {
         // Verify assessment is published
         if (assessment.getStatus() != AssessmentStatus.PUBLISHED) {
             throw new AssessmentException(ErrorMessages.ASSESSMENT_NOT_PUBLISHED, HttpStatus.BAD_REQUEST);
+        }
+
+        // Verify user is enrolled in the course
+        if (!enrollmentService.isUserEnrolledInCourse(userId, assessment.getCourseId())) {
+            log.warn("User {} attempted to access assessment {} for course {} without enrollment",
+                    userId, assessmentId, assessment.getCourseId());
+            throw new AssessmentException(
+                    "User is not enrolled in the course associated with this assessment",
+                    HttpStatus.FORBIDDEN
+            );
         }
 
         // Create attempt

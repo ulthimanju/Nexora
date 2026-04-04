@@ -40,10 +40,19 @@ public class SecurityConfig {
                         .requestMatchers(
                                 AUTH_BASE_PATH + AUTH_MAGIC_LINK_BASE_PATH + AUTH_MAGIC_LINK_REQUEST_PATH,
                                 AUTH_BASE_PATH + AUTH_MAGIC_LINK_BASE_PATH + AUTH_MAGIC_LINK_VERIFY_PATH,
-                                AUTH_BASE_PATH + "/**",
+                                AUTH_BASE_PATH + AUTH_REGISTER_PATH,
+                                AUTH_BASE_PATH + AUTH_LOGIN_PATH,
+                                AUTH_BASE_PATH + AUTH_LOGIN_OTP_REQUEST_PATH,
+                                AUTH_BASE_PATH + AUTH_LOGIN_OTP_VERIFY_PATH,
+                                AUTH_BASE_PATH + AUTH_VERIFY_EMAIL_PATH,
+                                AUTH_BASE_PATH + AUTH_RESEND_OTP_PATH,
                                 ACTUATOR_HEALTH_PATH,
                                 JWKS_PATH
                         ).permitAll()
+                        .requestMatchers(
+                                AUTH_BASE_PATH + AUTH_REFRESH_PATH,
+                                AUTH_BASE_PATH + AUTH_LOGOUT_PATH
+                        ).authenticated()
                         .requestMatchers(ADMIN_BASE_PATH + "/**").hasRole(ROLE_ADMIN_NAME)
                         .anyRequest().authenticated()
                 )
