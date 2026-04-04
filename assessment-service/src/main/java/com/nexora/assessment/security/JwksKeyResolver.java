@@ -82,7 +82,7 @@ public class JwksKeyResolver {
         throw new IllegalStateException("No JWKS URI or public key path configured for JWT verification");
     }
 
-    private RSAPublicKey loadFromJwks(String jwksUri) throws IOException {
+    private RSAPublicKey loadFromJwks(String jwksUri) throws Exception {
         String response = restTemplate.getForObject(jwksUri, String.class);
         if (!StringUtils.hasText(response)) {
             throw new IllegalStateException("Empty response from JWKS endpoint");

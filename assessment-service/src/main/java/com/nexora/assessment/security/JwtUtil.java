@@ -38,8 +38,10 @@ public class JwtUtil {
     }
 
     public List<String> extractRoles(Claims claims) {
-        List<String> roles = claims.get(ServiceConstants.ROLES_CLAIM, List.class);
-        return roles == null ? Collections.emptyList() : roles;
+        List<?> roles = claims.get(ServiceConstants.ROLES_CLAIM, List.class);
+        return roles == null
+                ? Collections.emptyList()
+                : roles.stream().map(Object::toString).toList();
     }
 
     public boolean validateToken(String token) {

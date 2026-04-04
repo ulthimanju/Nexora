@@ -1,5 +1,8 @@
 package com.nexora.assessment.service;
 
+import com.nexora.assessment.client.AiClient;
+import com.nexora.assessment.client.dto.AssessmentGenerationRequest;
+import com.nexora.assessment.client.dto.GeneratedAssessmentDTO;
 import com.nexora.assessment.constants.ErrorMessages;
 import com.nexora.assessment.constants.LogMessages;
 import com.nexora.assessment.domain.entity.Assessment;
@@ -10,8 +13,9 @@ import com.nexora.assessment.dto.response.AssessmentResponse;
 import com.nexora.assessment.dto.response.QuestionOptionResponse;
 import com.nexora.assessment.dto.response.QuestionResponse;
 import com.nexora.assessment.dto.response.QuestionsResponse;
-import com.nexora.assessment.exception.AssessmentNotFoundException;
 import com.nexora.assessment.exception.AssessmentException;
+import com.nexora.assessment.exception.AssessmentNotFoundException;
+import com.nexora.assessment.exception.AiServiceException;
 import com.nexora.assessment.repository.AssessmentRepository;
 import com.nexora.assessment.repository.AttemptRepository;
 import com.nexora.assessment.repository.QuestionRepository;
@@ -33,6 +37,7 @@ public class AssessmentServiceImpl implements AssessmentService {
     private final AssessmentRepository assessmentRepository;
     private final QuestionRepository questionRepository;
     private final AttemptRepository attemptRepository;
+    private final AiClient aiClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -71,6 +76,22 @@ public class AssessmentServiceImpl implements AssessmentService {
     public Assessment getAssessmentById(UUID assessmentId) {
         return assessmentRepository.findById(assessmentId)
                 .orElseThrow(() -> new AssessmentNotFoundException(ErrorMessages.ASSESSMENT_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GeneratedAssessmentDTO generateAssessment(AssessmentGenerationRequest request) {
+        try {
+            GeneratedAssessmentDTO result = aiClient.generateAssessment(request).block();
+            if (result == null) {
+                throw new AiServiceException("AI generation returned empty response");
+            }
+            return result;
+        } catch (AiServiceException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new AiServiceException("AI generation failed: " + ex.getMessage());
+        }
     }
 
     private AssessmentResponse mapToAssessmentResponse(Assessment assessment) {

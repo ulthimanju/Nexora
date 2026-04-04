@@ -5,9 +5,11 @@ import com.nexora.assessment.constants.LogMessages;
 import com.nexora.assessment.domain.entity.Question;
 import com.nexora.assessment.domain.entity.QuestionOption;
 import com.nexora.assessment.domain.enums.QuestionType;
+import com.nexora.assessment.exception.EvaluationException;
 import com.nexora.assessment.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -91,7 +93,14 @@ public class EvaluationServiceImpl implements EvaluationService {
             String input = (String) testCase.getOrDefault("input", "");
             String expectedOutput = (String) testCase.getOrDefault("expectedOutput", "");
 
-            PistonClient.PistonExecutionResult result = pistonClient.execute(language, code, input);
+            PistonClient.PistonExecutionResult result;
+            try {
+                result = pistonClient.execute(language, code, input);
+            } catch (EvaluationException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                throw new EvaluationException("Code execution failed", HttpStatus.UNPROCESSABLE_ENTITY, ex);
+            }
 
             if (result.success() && result.output().equals(expectedOutput.trim())) {
                 passedCount++;
