@@ -2,6 +2,7 @@
 package com.nexora.auth.service;
 
 import com.nexora.auth.config.JwtConfig;
+import com.nexora.auth.model.TokenType;
 import com.nexora.auth.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,6 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.nexora.auth.constants.ServiceConstants.ROLES_CLAIM_KEY;
+import static com.nexora.auth.constants.ServiceConstants.TOKEN_TYPE_CLAIM_KEY;
 import static com.nexora.auth.constants.ServiceConstants.USER_ID_CLAIM_KEY;
 
 @Service
@@ -35,11 +37,14 @@ public class TokenService {
         claims.put(ROLES_CLAIM_KEY, userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
+        claims.put(TOKEN_TYPE_CLAIM_KEY, TokenType.ACCESS.name());
         return createToken(claims, userDetails.getUsername(), jwtConfig.getExpiration());
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return createToken(new HashMap<>(), userDetails.getUsername(), jwtConfig.getRefreshExpiration());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(TOKEN_TYPE_CLAIM_KEY, TokenType.REFRESH.name());
+        return createToken(claims, userDetails.getUsername(), jwtConfig.getRefreshExpiration());
     }
 
     private String createToken(Map<String, Object> claims, String subject, Long expiration) {
@@ -63,6 +68,19 @@ public class TokenService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public TokenType extractTokenType(String token) {
+        String tokenType = extractClaim(token, claims -> claims.get(TOKEN_TYPE_CLAIM_KEY, String.class));
+        if (tokenType == null) {
+            return null;
+        }
+        try {
+            return TokenType.valueOf(tokenType);
+        } catch (IllegalArgumentException e) {
+            log.warn("Unknown token type: {}", tokenType);
+            return null;
+        }
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -80,7 +98,19 @@ public class TokenService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean isTokenValid(String token, UserDetails userDetails) {
+    public Boolean isAccessTokenValid(String token, UserDetails userDetails) {
+        return isTokenValid(token, userDetails, TokenType.ACCESS);
+    }
+
+    public Boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        return isTokenValid(token, userDetails, TokenType.REFRESH);
+    }
+
+    private Boolean isTokenValid(String token, UserDetails userDetails, TokenType expectedType) {
+        TokenType tokenType = extractTokenType(token);
+        if (tokenType != expectedType) {
+            return false;
+        }
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }

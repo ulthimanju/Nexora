@@ -115,6 +115,9 @@ public class AuthService {
                     .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
 
             validateActiveAccount(user);
+            if (!Boolean.TRUE.equals(tokenService.isRefreshTokenValid(refreshTokenStr, user))) {
+                throw new AuthException(INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
+            }
 
             String tokenHash = hashToken(refreshTokenStr);
             RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
@@ -143,6 +146,14 @@ public class AuthService {
     @Transactional
     public void logout(String refreshTokenStr) {
         try {
+            String username = tokenService.extractUsername(refreshTokenStr);
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+
+            if (!Boolean.TRUE.equals(tokenService.isRefreshTokenValid(refreshTokenStr, user))) {
+                throw new AuthException(INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
+            }
+
             String tokenHash = hashToken(refreshTokenStr);
             RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
                     .orElseThrow(() -> new AuthException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED));

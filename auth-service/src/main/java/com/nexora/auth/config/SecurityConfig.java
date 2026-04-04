@@ -47,12 +47,10 @@ public class SecurityConfig {
                                 AUTH_BASE_PATH + AUTH_VERIFY_EMAIL_PATH,
                                 AUTH_BASE_PATH + AUTH_RESEND_OTP_PATH,
                                 ACTUATOR_HEALTH_PATH,
+                                AUTH_BASE_PATH + AUTH_REFRESH_PATH,
+                                AUTH_BASE_PATH + AUTH_LOGOUT_PATH,
                                 JWKS_PATH
                         ).permitAll()
-                        .requestMatchers(
-                                AUTH_BASE_PATH + AUTH_REFRESH_PATH,
-                                AUTH_BASE_PATH + AUTH_LOGOUT_PATH
-                        ).authenticated()
                         .requestMatchers(ADMIN_BASE_PATH + "/**").hasRole(ROLE_ADMIN_NAME)
                         .anyRequest().authenticated()
                 )

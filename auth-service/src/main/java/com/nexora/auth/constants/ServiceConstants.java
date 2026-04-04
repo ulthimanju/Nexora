@@ -48,6 +48,7 @@ public final class ServiceConstants {
     public static final String USER_ID_CLAIM_KEY = "userId";
     public static final String REFRESH_TOKEN_REDIS_PREFIX = "auth:refresh:";
     public static final String ROLES_CLAIM_KEY = "roles";
+    public static final String TOKEN_TYPE_CLAIM_KEY = "tokenType";
     public static final String OTP_REGISTER_REDIS_PREFIX = "auth:otp:register:";
     public static final String OTP_LOGIN_REDIS_PREFIX = "auth:otp:login:";
     public static final String OTP_ATTEMPTS_REDIS_PREFIX = "auth:otp:attempts:";
