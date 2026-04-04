@@ -23,9 +23,6 @@ spring:
     username: ${RABBITMQ_USER:guest}
     password: ${RABBITMQ_PASS:guest}
 
-jwt:
-  secret: ${JWT_SECRET:changeme}
-
 logging:
   level:
     com.nexora.assessment: DEBUG

@@ -12,7 +12,7 @@ services:
       DB_USER: ${DB_USER:-nexora_user}
       DB_PASS: ${DB_PASS:-nexora_pass}
       REDIS_HOST: redis
-      JWT_SECRET: ${JWT_SECRET:-changeme}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:-}
     depends_on:
       auth-db:
         condition: service_healthy
@@ -38,7 +38,9 @@ services:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: ${RABBITMQ_USER:-guest}
       RABBITMQ_PASS: ${RABBITMQ_PASS:-guest}
-      JWT_SECRET: ${JWT_SECRET:-changeme}
+      JWKS_URI: ${JWKS_URI:-http://auth-service:8081/.well-known/jwks.json}
+      AI_SERVICE_URL: http://ai-service:8085
+      X_INTERNAL_KEY: ${X_INTERNAL_KEY:-nexora-internal-key}
     depends_on:
       assessment-db:
         condition: service_healthy
@@ -46,6 +48,27 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    networks:
+      - nexora-net
+    restart: unless-stopped
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: nexora-ai-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      X_INTERNAL_KEY: ${X_INTERNAL_KEY:-nexora-internal-key}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    depends_on:
+      - redis
     networks:
       - nexora-net
     restart: unless-stopped

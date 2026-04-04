@@ -48,7 +48,7 @@ public class QuestionCacheService {
     }
 
     private String buildCacheKey(GenerateAssessmentRequest request) {
-        return String.format("assessment:questions:%s:%d:%d:%s",
+        return String.format("ai:assessment:%s:%d:%d:%s",
                 request.getTopic().toLowerCase().replace(" ", "-"),
                 request.getMcqCount(),
                 request.getCodingCount(),

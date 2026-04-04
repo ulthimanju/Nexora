@@ -39,7 +39,7 @@ ai:
     model: gpt-4o
     base-url: https://api.openai.com/v1
   internal:
-    secret-key: ${AI_INTERNAL_SECRET:nexora-internal-secret-change-in-prod}
+    secret-key: ${AI_INTERNAL_SECRET:${X_INTERNAL_KEY:nexora-internal-secret-change-in-prod}}
   cache:
     question-ttl-hours: 6
 

@@ -20,6 +20,8 @@ management:
       show-details: when-authorized
 
 nexora:
+  jwt:
+    jwks-uri: ${JWKS_URI:http://auth-service:8081/.well-known/jwks.json}
   piston:
     base-url: ${PISTON_BASE_URL:https://emkc.org/api/v2/piston}
   course-service:
@@ -28,6 +30,7 @@ nexora:
     base-url: ${PROGRESS_SERVICE_URL:http://localhost:8084}
   ai-service:
     base-url: ${AI_SERVICE_URL:http://localhost:8085}
+    internal-key: ${X_INTERNAL_KEY:nexora-internal-key}
   category:
     thresholds:
       beginner: 0

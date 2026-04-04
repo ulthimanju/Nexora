@@ -45,19 +45,20 @@ public final class ServiceConstants {
     public static final String ADMIN_USERS_MESSAGE = "Admin users endpoint";
 
     // Tokens and claims
-    public static final String REFRESH_TOKEN_REDIS_PREFIX = "refresh_token:";
+    public static final String USER_ID_CLAIM_KEY = "userId";
+    public static final String REFRESH_TOKEN_REDIS_PREFIX = "auth:refresh:";
     public static final String ROLES_CLAIM_KEY = "roles";
-    public static final String OTP_REGISTER_REDIS_PREFIX = "otp:register:";
-    public static final String OTP_LOGIN_REDIS_PREFIX = "otp:login:";
-    public static final String OTP_ATTEMPTS_REDIS_PREFIX = "otp:attempts:";
-    public static final String OTP_RESEND_REDIS_PREFIX = "otp:resend-count:";
+    public static final String OTP_REGISTER_REDIS_PREFIX = "auth:otp:register:";
+    public static final String OTP_LOGIN_REDIS_PREFIX = "auth:otp:login:";
+    public static final String OTP_ATTEMPTS_REDIS_PREFIX = "auth:otp:attempts:";
+    public static final String OTP_RESEND_REDIS_PREFIX = "auth:otp:resend-count:";
     public static final int OTP_LENGTH = 6;
     public static final int OTP_RESEND_LIMIT = 3;
     public static final long OTP_RESEND_WINDOW_MINUTES = 60L;
     public static final String OTP_TYPE_REGISTER = "register";
     public static final String OTP_TYPE_LOGIN = "login";
-    public static final String MAGIC_LINK_REDIS_PREFIX = "magic:";
-    public static final String MAGIC_LINK_RATE_REDIS_PREFIX = "magic:rate:";
+    public static final String MAGIC_LINK_REDIS_PREFIX = "auth:magic:";
+    public static final String MAGIC_LINK_RATE_REDIS_PREFIX = "auth:magic:rate:";
     public static final String MAGIC_LINK_SENT_MESSAGE = "Magic link sent to your email";
 
     // JWKS metadata

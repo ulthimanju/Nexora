@@ -18,7 +18,7 @@ public final class ServiceConstants {
     public static final String ROLES_CLAIM = "roles";
 
     // Redis Prefixes
-    public static final String ATTEMPT_CACHE_PREFIX = "attempt:";
+    public static final String ATTEMPT_CACHE_PREFIX = "assess:attempt:";
 
     // RabbitMQ
     public static final String ASSESSMENT_EXCHANGE = "nexora.assessment";

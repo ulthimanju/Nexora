@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- Users table (partitioned for scale)
 CREATE TABLE IF NOT EXISTS users (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -46,3 +48,19 @@ ALTER TABLE users
     ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'PENDING';
 
 UPDATE users SET status = 'ACTIVE' WHERE status IS NULL;
+
+DO $$
+DECLARE admin_id UUID;
+BEGIN
+    INSERT INTO users (id, username, email, password, token_version, enabled, status, created_at)
+    VALUES (gen_random_uuid(), 'admin', 'admin@nexora.local', '$2b$12$Vt3jlFfgutU2uboVCcrcVO6t5v9jHD2rnvMwtn2s1YvAm7Is5Wsn6', 0, TRUE, 'ACTIVE', NOW())
+    ON CONFLICT (email) DO NOTHING;
+
+    SELECT id INTO admin_id FROM users WHERE email = 'admin@nexora.local';
+
+    INSERT INTO user_roles (user_id, role_id)
+    SELECT admin_id, r.id
+    FROM roles r
+    WHERE r.name = 'ROLE_ADMIN'
+    ON CONFLICT DO NOTHING;
+END $$;
